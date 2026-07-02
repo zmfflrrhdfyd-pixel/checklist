@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="방문체크">
+<title>고대안암 방문 체크리스트</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { font-family: -apple-system, 'Apple SD Gothic Neo', sans-serif; background: #F0F4F8; min-height: 100vh; padding-bottom: 40px; }
+  .header { background: linear-gradient(135deg, #1A3A5C 0%, #2E6B9E 100%); padding: 50px 16px 16px; color: #fff; }
+  .header-sub { font-size: 11px; opacity: 0.7; margin-bottom: 4px; }
+  .header-title { font-size: 20px; font-weight: 700; margin-bottom: 2px; }
+  .header-week { font-size: 13px; opacity: 0.8; }
+  .progress-wrap { margin-top: 14px; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; }
+  .progress-bar { background: rgba(255,255,255,0.2); border-radius: 99px; height: 8px; }
+  .progress-fill { background: #4ECDC4; border-radius: 99px; height: 8px; transition: width 0.4s ease; }
+  .filter-bar { display: flex; gap: 8px; padding: 12px 16px; background: #fff; border-bottom: 1px solid #E8EDF2; overflow-x: auto; position: sticky; top: 0; z-index: 10; }
+  .filter-btn { padding: 6px 14px; border-radius: 99px; border: none; font-size: 12px; cursor: pointer; white-space: nowrap; background: #EEF2F7; color: #555; }
+  .filter-btn.active { background: #1A3A5C; color: #fff; font-weight: 700; }
+  .reset-btn { margin-left: auto; padding: 6px 14px; border-radius: 99px; border: 1px solid #E74C3C; background: #fff; color: #E74C3C; font-size: 12px; cursor: pointer; white-space: nowrap; }
+  .search-wrap { padding: 10px 16px; background: #fff; border-bottom: 1px solid #E8EDF2; }
+  .search-input { width: 100%; padding: 8px 12px; border-radius: 8px; border: 1.5px solid #D0DCE8; font-size: 14px; outline: none; font-family: inherit; }
+  .legend { display: flex; gap: 10px; padding: 10px 16px; background: #fff; border-bottom: 1px solid #E8EDF2; }
+  .legend-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #555; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+  .list { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+  .dept-card { background: #fff; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); overflow: hidden; }
+  .dept-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; cursor: pointer; }
+  .dept-header.done { background: #F0FBF8; }
+  .dept-left { display: flex; align-items: center; gap: 8px; }
+  .dept-badge { color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 6px; }
+  .dept-name { font-weight: 600; font-size: 14px; color: #1A2B3C; }
+  .key-star { font-size: 11px; }
+  .dept-right { display: flex; align-items: center; gap: 8px; }
+  .dept-count { font-size: 12px; font-weight: 700; color: #888; }
+  .dept-count.done { color: #27AE60; }
+  .dept-arrow { color: #aaa; font-size: 12px; }
+  .prof-list { border-top: 1px solid #F0F4F8; }
+  .prof-item { padding: 10px 14px; border-bottom: 1px solid #F5F7FA; }
+  .prof-item:last-child { border-bottom: none; }
+  .prof-item.visited { background: #FAFFFE; }
+  .prof-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .prof-name { font-size: 14px; font-weight: 600; color: #1A2B3C; }
+  .prof-name.visited { color: #1A7A5E; }
+  .visit-badge { background: #4ECDC4; color: #fff; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 99px; margin-left: 6px; }
+  .note-btn { background: #F5F7FA; border: none; border-radius: 6px; padding: 3px 8px; font-size: 11px; color: #888; cursor: pointer; }
+  .note-btn.has-note { background: #EEF7FF; color: #2E6B9E; }
+  .note-display { font-size: 11px; color: #555; background: #EEF7FF; border-radius: 6px; padding: 5px 8px; margin-bottom: 7px; }
+  .day-btns { display: flex; gap: 6px; }
+  .day-btn { width: 38px; height: 36px; border-radius: 8px; border: none; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 1px; transition: all 0.15s; }
+  .day-check { font-size: 8px; }
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: flex-end; z-index: 999; display: none; }
+  .modal-bg.open { display: flex; }
+  .modal { background: #fff; width: 100%; border-radius: 16px 16px 0 0; padding: 20px 16px 40px; }
+  .modal-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; color: #1A2B3C; }
+  .modal-textarea { width: 100%; height: 100px; padding: 12px; border-radius: 8px; border: 1.5px solid #D0DCE8; font-size: 14px; resize: none; outline: none; font-family: inherit; }
+  .modal-btns { display: flex; gap: 8px; margin-top: 10px; }
+  .modal-cancel { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #ddd; background: #fff; font-size: 14px; cursor: pointer; color: #555; }
+  .modal-save { flex: 2; padding: 12px; border-radius: 10px; border: none; background: #1A3A5C; color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .saving { position: fixed; top: 50px; right: 16px; background: rgba(0,0,0,0.6); color: #fff; padding: 4px 10px; border-radius: 99px; font-size: 11px; display: none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-sub">고대안암병원 전체</div>
+  <div class="header-title">주간 방문 체크리스트</div>
+  <div class="header-week" id="weekLabel"></div>
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>이번 주 방문</span>
+      <span id="progressText"></span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <button class="filter-btn active" onclick="setFilter('all')">전체</button>
+  <button class="filter-btn" onclick="setFilter('key')">⭐ 주력과</button>
+  <button class="filter-btn" onclick="setFilter('unchecked')">미방문</button>
+  <button class="filter-btn" onclick="setFilter('checked')">방문완료</button>
+  <button class="reset-btn" onclick="resetWeek()">🗑 초기화</button>
+</div>
+
+<div class="search-wrap">
+  <input class="search-input" type="search" placeholder="🔍 교수님 이름 검색..." oninput="onSearch(this.value)" />
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#4A90D9"></div>월</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#E67E22"></div>화</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#27AE60"></div>수</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#8E44AD"></div>목</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#E74C3C"></div>금</div>
+  <div style="margin-left:auto;font-size:11px;color:#888">⭐ = 주력과</div>
+</div>
+
+<div class="list" id="list"></div>
+
+<div class="modal-bg" id="modalBg" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">메모 작성</div>
+    <textarea class="modal-textarea" id="noteInput" placeholder="특이사항, 면담 내용, 요청사항 등"></textarea>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal()">취소</button>
+      <button class="modal-save" onclick="saveNote()">저장</button>
+    </div>
+  </div>
+</div>
+
+<div class="saving" id="saving">저장 중...</div>
+
+<script>
+const DEPARTMENTS = [
+  { code: "ENDO", name: "내분비내과", key: true, professors: ["김경진A","김경진B","김남훈","김영은","김정아","신수명","김희영"] },
+  { code: "GI", name: "소화기내과", key: true, professors: ["금보라","김은선","김태형","박세준","서연석","이보미","이재민","이호승","전한조","전훈재","진윤태","최혁순"] },
+  { code: "NR", name: "신경과", key: true, professors: ["김병조","김정빈","김하욤","노지훈","박건우","박영빈","박진우","백경원","유성욱","이선욱","이찬녕","정다다","조경희"] },
+  { code: "NS", name: "신경외과", key: true, professors: ["강신혁","김장훈","문은지","박경재","박동혁","박정율","안성재","오영규","이성우","이수범","허준석"] },
+  { code: "OS", name: "정형외과", key: true, professors: ["박종웅","박종훈","양재혁","이형래","장기모","장우영","최인철","정웅교","한승범","홍석하"] },
+  { code: "RH", name: "류마티스내과", key: true, professors: ["이영호","지종대"] },
+  { code: "NE", name: "신장내과", key: true, professors: ["김명규","김민형","오세원","유진영","이호진","조상경"] },
+  { code: "FM", name: "가정의학과", key: true, professors: ["김양현","윤지현","이규배","이종성","한병덕"] },
+  { code: "OG", name: "산부인과", key: true, professors: ["김성민","류기진","박현태","서현경","송재윤","안기훈","이상훈","이선미","정혜경"] },
+  { code: "OPH", name: "안과", key: true, professors: ["김동현","김승현","김영호","신정화","오재령","유정권","최유진"] },
+  { code: "BES", name: "유방내분비외과", key: true, professors: ["김성목","김훈엽","박다원","유지영","이영원","이은신","정승필"] },
+  { code: "ENT", name: "이비인후과", key: true, professors: ["김연수","김태훈","백승국","신재민","임기정","장지원","최수정"] },
+  { code: "ID", name: "감염내과", key: true, professors: ["김민자","김정연","손장욱","윤영경","정유승"] },
+  { code: "CV", name: "순환기내과", key: false, professors: ["김미나","김소리","김온유","김윤기","박성미","박영준","박재형","서창옥","신용훈","심재민","유철웅","유하영","임자영","정주희","조동혁","주형준","차정준","최종일","홍순준"] },
+  { code: "URO", name: "비뇨의학과", key: false, professors: ["강성구","강석호","노태일","박민구","심지성","진현중"] },
+  { code: "HEM", name: "혈액내과", key: false, professors: ["곽근예","김병수","김창곤","박용"] },
+  { code: "ONC", name: "종양내과", key: false, professors: ["김좌훈","김주원","박경화","이성곤","이수현","이지원","최윤지"] },
+  { code: "TVS", name: "심장혈관흉부외과", key: false, professors: ["김지언","김희중","손호성","이성호","이재홍","이준호","정영기","정재승","정재호"] },
+  { code: "PULMO", name: "호흡기알레르기내과", key: false, professors: ["김병근","양원진","이상엽","이은주","이영학","조성민","최수인"] },
+  { code: "RM", name: "재활의학과", key: false, professors: ["권유하","배초롱","서경천","이상헌","이세광"] },
+  { code: "PSY", name: "정신건강의학과", key: false, professors: ["김수진","박지훈","염지원","이헌정","정재권"] },
+  { code: "DERM", name: "피부과", key: false, professors: ["김대현","서수홍","안효현"] },
+  { code: "TXP", name: "이식혈관외과", key: false, professors: ["오영주","전흥만","정철웅"] },
+  { code: "HPS", name: "간담췌외과", key: false, professors: ["김동식","유세현","유영동","전수민","최유진"] },
+  { code: "CRS", name: "대장항문외과", key: false, professors: ["곽정면","김지선","김진","백세진","유효선","조은혜"] },
+  { code: "UGS", name: "위장관외과(상부)", key: false, professors: ["권영근","민재석","박성수","이인영"] },
+  { code: "PED", name: "소아청소년과", key: false, professors: ["강창민","박규현","박유진","박준은","박지원","변정혜","서민규"] },
+  { code: "AN", name: "마취통증의학과", key: false, professors: ["고재철","김선민"] },
+  { code: "RAD", name: "영상의학과", key: false, professors: ["곽정원"] },
+  { code: "RO", name: "방사선종양학과", key: false, professors: ["김동연","김철용","이남권"] },
+  { code: "TICU", name: "중환자외상외과", key: false, professors: ["김수정","이재명"] }
+];
+
+const DAYS = ["월","화","수","목","금"];
+const DAY_COLORS = { 월:"#4A90D9", 화:"#E67E22", 수:"#27AE60", 목:"#8E44AD", 금:"#E74C3C" };
+
+let checks = {}, notes = {}, openDepts = {}, currentFilter = 'all', searchQuery = '';
+let editingNoteKey = null;
+
+function getWeekKey() {
+  const now = new Date(), day = now.getDay();
+  const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+  const mon = new Date(new Date().setDate(diff));
+  return `checklist_v2_${mon.getFullYear()}_${mon.getMonth()+1}_${mon.getDate()}`;
+}
+
+function getWeekLabel() {
+  const now = new Date(), day = now.getDay();
+  const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+  const mon = new Date(new Date().setDate(diff));
+  const fri = new Date(mon); fri.setDate(mon.getDate()+4);
+  return `📅 ${mon.getMonth()+1}/${mon.getDate()} ~ ${fri.getMonth()+1}/${fri.getDate()}`;
+}
+
+const WEEK_KEY = getWeekKey();
+
+function load() {
+  try {
+    const raw = localStorage.getItem(WEEK_KEY);
+    if (raw) { const d = JSON.parse(raw); checks = d.checks||{}; notes = d.notes||{}; }
+  } catch(e) {}
+  DEPARTMENTS.forEach(d => openDepts[d.code] = d.key);
+  document.getElementById('weekLabel').textContent = getWeekLabel();
+  render();
+}
+
+function save() {
+  try { localStorage.setItem(WEEK_KEY, JSON.stringify({checks, notes})); } catch(e) {}
+  const el = document.getElementById('saving');
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 800);
+}
+
+function isChecked(dept, prof, day) { return !!checks[`${dept}_${prof}_${day}`]; }
+function visitCount(dept, prof) { return DAYS.filter(d => isChecked(dept, prof, d)).length; }
+
+function toggleCheck(dept, prof, day) {
+  const k = `${dept}_${prof}_${day}`;
+  checks[k] = !checks[k];
+  save(); render();
+}
+
+function setFilter(f) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  render();
+}
+
+function onSearch(q) { searchQuery = q.trim(); render(); }
+
+function toggleDept(code) { openDepts[code] = !openDepts[code]; render(); }
+
+function openNote(key) {
+  editingNoteKey = key;
+  document.getElementById('noteInput').value = notes[key] || '';
+  document.getElementById('modalBg').classList.add('open');
+  setTimeout(() => document.getElementById('noteInput').focus(), 100);
+}
+
+function closeModal() { document.getElementById('modalBg').classList.remove('open'); editingNoteKey = null; }
+
+function saveNote() {
+  if (!editingNoteKey) return;
+  const val = document.getElementById('noteInput').value.trim();
+  if (val) notes[editingNoteKey] = val;
+  else delete notes[editingNoteKey];
+  save(); render(); closeModal();
+}
+
+function resetWeek() {
+  if (confirm('이번 주 체크를 전부 초기화할까요?')) { checks = {}; notes = {}; save(); render(); }
+}
+
+function updateProgress() {
+  const total = DEPARTMENTS.reduce((s,d) => s+d.professors.length, 0);
+  const visited = DEPARTMENTS.reduce((s,d) => s+d.professors.filter(p => visitCount(d.code,p)>0).length, 0);
+  const pct = Math.round(visited/total*100);
+  document.getElementById('progressText').textContent = `${visited} / ${total}명 (${pct}%)`;
+  document.getElementById('progressFill').style.width = pct+'%';
+}
+
+function render() {
+  updateProgress();
+  const list = document.getElementById('list');
+  let html = '';
+
+  for (const dept of DEPARTMENTS) {
+    if (currentFilter === 'key' && !dept.key) continue;
+
+    let profs = dept.professors;
+    if (searchQuery) profs = profs.filter(p => p.includes(searchQuery));
+    if (currentFilter === 'checked') profs = profs.filter(p => visitCount(dept.code,p)>0);
+    if (currentFilter === 'unchecked') profs = profs.filter(p => visitCount(dept.code,p)===0);
+    if (profs.length === 0) continue;
+
+    const deptVisited = dept.professors.filter(p => visitCount(dept.code,p)>0).length;
+    const allDone = deptVisited === dept.professors.length;
+    const isOpen = openDepts[dept.code];
+    const bgColor = allDone ? '#27AE60' : (dept.key ? '#1A3A5C' : '#5D6D7E');
+
+    html += `<div class="dept-card">
+      <div class="dept-header ${allDone?'done':''}" onclick="toggleDept('${dept.code}')">
+        <div class="dept-left">
+          <span class="dept-badge" style="background:${bgColor}">${dept.code}</span>
+          <span class="dept-name">${dept.name}</span>
+          ${dept.key ? '<span class="key-star">⭐</span>' : ''}
+          ${allDone ? '<span style="font-size:12px">✅</span>' : ''}
+        </div>
+        <div class="dept-right">
+          <span class="dept-count ${allDone?'done':''}">${deptVisited}/${dept.professors.length}</span>
+          <span class="dept-arrow">${isOpen?'▲':'▼'}</span>
+        </div>
+      </div>`;
+
+    if (isOpen) {
+      html += `<div class="prof-list">`;
+      for (const prof of profs) {
+        const cnt = visitCount(dept.code, prof);
+        const noteKey = `${dept.code}_${prof}`;
+        const hasNote = !!notes[noteKey];
+        html += `<div class="prof-item ${cnt>0?'visited':''}">
+          <div class="prof-top">
+            <div>
+              <span class="prof-name ${cnt>0?'visited':''}">${prof} 교수님</span>
+              ${cnt>0 ? `<span class="visit-badge">✓ ${cnt}회</span>` : ''}
+            </div>
+            <button class="note-btn ${hasNote?'has-note':''}" onclick="openNote('${noteKey}')">${hasNote?'📝 메모':'+ 메모'}</button>
+          </div>
+          ${hasNote ? `<div class="note-display">${notes[noteKey]}</div>` : ''}
+          <div class="day-btns">`;
+        for (const day of DAYS) {
+          const checked = isChecked(dept.code, prof, day);
+          const color = DAY_COLORS[day];
+          const bg = checked ? color : '#F8FAFC';
+          const txtColor = checked ? '#fff' : color;
+          const border = checked ? 'none' : `1.5px solid ${color}44`;
+          html += `<button class="day-btn" style="background:${bg};color:${txtColor};border:${border}" onclick="toggleCheck('${dept.code}','${prof}','${day}')">
+            <span>${day}</span>${checked?'<span class="day-check">✓</span>':''}
+          </button>`;
+        }
+        html += `</div></div>`;
+      }
+      html += `</div>`;
+    }
+    html += `</div>`;
+  }
+  list.innerHTML = html;
+}
+
+load();
+</script>
+</body>
+</html>
