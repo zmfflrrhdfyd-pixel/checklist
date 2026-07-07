@@ -8,96 +8,94 @@
 <meta name="apple-mobile-web-app-title" content="방문체크">
 <title>고대안암 방문 체크리스트</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body { font-family: -apple-system, 'Apple SD Gothic Neo', sans-serif; background: #F0F4F8; min-height: 100vh; padding-bottom: 40px; }
-  .header { background: linear-gradient(135deg, #1A3A5C 0%, #2E6B9E 100%); padding: 50px 16px 16px; color: #fff; }
-  .header-sub { font-size: 11px; opacity: 0.7; margin-bottom: 4px; }
-  .header-title { font-size: 20px; font-weight: 700; margin-bottom: 2px; }
-  .header-week { font-size: 13px; opacity: 0.8; }
-  .progress-wrap { margin-top: 14px; }
-  .progress-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; }
-  .progress-bar { background: rgba(255,255,255,0.2); border-radius: 99px; height: 8px; }
-  .progress-fill { background: #4ECDC4; border-radius: 99px; height: 8px; transition: width 0.4s ease; }
-  .filter-bar { display: flex; gap: 8px; padding: 12px 16px; background: #fff; border-bottom: 1px solid #E8EDF2; overflow-x: auto; position: sticky; top: 0; z-index: 10; }
-  .filter-btn { padding: 6px 14px; border-radius: 99px; border: none; font-size: 12px; cursor: pointer; white-space: nowrap; background: #EEF2F7; color: #555; }
-  .filter-btn.active { background: #1A3A5C; color: #fff; font-weight: 700; }
-  .reset-btn { margin-left: auto; padding: 6px 14px; border-radius: 99px; border: 1px solid #E74C3C; background: #fff; color: #E74C3C; font-size: 12px; cursor: pointer; white-space: nowrap; }
-  .search-wrap { padding: 10px 16px; background: #fff; border-bottom: 1px solid #E8EDF2; }
-  .search-input { width: 100%; padding: 8px 12px; border-radius: 8px; border: 1.5px solid #D0DCE8; font-size: 14px; outline: none; font-family: inherit; }
-  .legend { display: flex; gap: 10px; padding: 10px 16px; background: #fff; border-bottom: 1px solid #E8EDF2; }
-  .legend-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #555; }
-  .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
-  .list { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
-  .dept-card { background: #fff; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); overflow: hidden; }
-  .dept-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; cursor: pointer; }
-  .dept-header.done { background: #F0FBF8; }
-  .dept-left { display: flex; align-items: center; gap: 8px; }
-  .dept-badge { color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 6px; }
-  .dept-name { font-weight: 600; font-size: 14px; color: #1A2B3C; }
-  .key-star { font-size: 11px; }
-  .dept-right { display: flex; align-items: center; gap: 8px; }
-  .dept-count { font-size: 12px; font-weight: 700; color: #888; }
-  .dept-count.done { color: #27AE60; }
-  .dept-arrow { color: #aaa; font-size: 12px; }
-  .prof-list { border-top: 1px solid #F0F4F8; }
-  .prof-item { padding: 10px 14px; border-bottom: 1px solid #F5F7FA; }
-  .prof-item:last-child { border-bottom: none; }
-  .prof-item.visited { background: #FAFFFE; }
-  .prof-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-  .prof-name { font-size: 14px; font-weight: 600; color: #1A2B3C; }
-  .prof-name.visited { color: #1A7A5E; }
-  .visit-badge { background: #4ECDC4; color: #fff; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 99px; margin-left: 6px; }
-  .note-btn { background: #F5F7FA; border: none; border-radius: 6px; padding: 3px 8px; font-size: 11px; color: #888; cursor: pointer; }
-  .note-btn.has-note { background: #EEF7FF; color: #2E6B9E; }
-  .note-display { font-size: 11px; color: #555; background: #EEF7FF; border-radius: 6px; padding: 5px 8px; margin-bottom: 7px; }
-  .day-btns { display: flex; gap: 6px; }
-  .day-btn { width: 38px; height: 36px; border-radius: 8px; border: none; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 1px; transition: all 0.15s; }
-  .day-check { font-size: 8px; }
-  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: flex-end; z-index: 999; display: none; }
-  .modal-bg.open { display: flex; }
-  .modal { background: #fff; width: 100%; border-radius: 16px 16px 0 0; padding: 20px 16px 40px; }
-  .modal-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; color: #1A2B3C; }
-  .modal-textarea { width: 100%; height: 100px; padding: 12px; border-radius: 8px; border: 1.5px solid #D0DCE8; font-size: 14px; resize: none; outline: none; font-family: inherit; }
-  .modal-btns { display: flex; gap: 8px; margin-top: 10px; }
-  .modal-cancel { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #ddd; background: #fff; font-size: 14px; cursor: pointer; color: #555; }
-  .modal-save { flex: 2; padding: 12px; border-radius: 10px; border: none; background: #1A3A5C; color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; }
-  .saving { position: fixed; top: 50px; right: 16px; background: rgba(0,0,0,0.6); color: #fff; padding: 4px 10px; border-radius: 99px; font-size: 11px; display: none; }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,'Apple SD Gothic Neo',sans-serif;background:#F0F4F8;min-height:100vh;padding-bottom:60px;}
+.header{background:linear-gradient(135deg,#1A3A5C 0%,#2E6B9E 100%);padding:50px 16px 16px;color:#fff;}
+.header-sub{font-size:11px;opacity:.7;margin-bottom:4px;}
+.header-title{font-size:20px;font-weight:700;margin-bottom:2px;}
+.header-week{font-size:13px;opacity:.8;}
+.progress-wrap{margin-top:14px;}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;}
+.progress-bar{background:rgba(255,255,255,.2);border-radius:99px;height:8px;}
+.progress-fill{background:#4ECDC4;border-radius:99px;height:8px;transition:width .4s;}
+.sticky-bar{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid #E8EDF2;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.filter-bar{display:flex;gap:6px;padding:10px 16px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.filter-btn{padding:6px 12px;border-radius:99px;border:none;font-size:12px;cursor:pointer;white-space:nowrap;background:#EEF2F7;color:#555;flex-shrink:0;}
+.filter-btn.active{background:#1A3A5C;color:#fff;font-weight:700;}
+.reset-btn{margin-left:auto;padding:6px 12px;border-radius:99px;border:1px solid #E74C3C;background:#fff;color:#E74C3C;font-size:12px;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.search-wrap{padding:8px 16px;}
+.search-input{width:100%;padding:8px 12px;border-radius:8px;border:1.5px solid #D0DCE8;font-size:14px;outline:none;font-family:inherit;}
+.day-tabs{display:flex;gap:0;padding:0 16px 10px;}
+.day-tab{flex:1;padding:7px 0;text-align:center;font-size:12px;font-weight:700;cursor:pointer;border-radius:8px;color:#aaa;transition:all .15s;}
+.day-tab.active{color:#fff;}
+.list{padding:10px 16px;display:flex;flex-direction:column;gap:8px;}
+.dept-card{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden;transition:box-shadow .2s;}
+.dept-card.is-key{box-shadow:0 2px 10px rgba(26,58,92,.15);border:1.5px solid #2E6B9E22;}
+.dept-header{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;cursor:pointer;}
+.dept-header.done{background:#F0FBF8;}
+.dept-header.is-key{background:#F0F6FF;}
+.dept-left{display:flex;align-items:center;gap:7px;flex:1;}
+.dept-badge{color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;flex-shrink:0;}
+.dept-name{font-weight:600;font-size:13px;color:#1A2B3C;}
+.dept-right{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.dept-count{font-size:12px;font-weight:700;color:#888;}
+.dept-count.done{color:#27AE60;}
+.star-btn{background:none;border:none;font-size:18px;cursor:pointer;padding:2px 4px;line-height:1;transition:transform .2s;}
+.star-btn:active{transform:scale(1.3);}
+.prof-list{border-top:1px solid #F0F4F8;}
+.prof-item{padding:9px 14px;border-bottom:1px solid #F5F7FA;}
+.prof-item:last-child{border-bottom:none;}
+.prof-item.visited{background:#FAFFFE;}
+.prof-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;}
+.prof-name{font-size:13px;font-weight:600;color:#1A2B3C;}
+.prof-name.visited{color:#1A7A5E;}
+.visit-badge{background:#4ECDC4;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:99px;margin-left:5px;}
+.note-btn{background:#F5F7FA;border:none;border-radius:6px;padding:3px 7px;font-size:10px;color:#888;cursor:pointer;}
+.note-btn.has-note{background:#EEF7FF;color:#2E6B9E;}
+.note-display{font-size:11px;color:#555;background:#EEF7FF;border-radius:6px;padding:4px 8px;margin-bottom:6px;}
+.slot-btns{display:flex;gap:5px;flex-wrap:wrap;}
+.slot-btn{padding:5px 10px;border-radius:7px;border:none;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;}
+.slot-btn.checked{color:#fff;}
+.slot-btn.unchecked{background:#F8FAFC;}
+.key-divider{display:flex;align-items:center;gap:8px;padding:6px 0 4px;}
+.key-divider-line{flex:1;height:1px;background:#D0DCE8;}
+.key-divider-text{font-size:11px;color:#888;font-weight:600;white-space:nowrap;}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-end;z-index:999;}
+.modal-bg.open{display:flex;}
+.modal{background:#fff;width:100%;border-radius:16px 16px 0 0;padding:20px 16px 40px;}
+.modal-title{font-size:15px;font-weight:700;margin-bottom:12px;color:#1A2B3C;}
+.modal-textarea{width:100%;height:90px;padding:12px;border-radius:8px;border:1.5px solid #D0DCE8;font-size:14px;resize:none;outline:none;font-family:inherit;}
+.modal-btns{display:flex;gap:8px;margin-top:10px;}
+.modal-cancel{flex:1;padding:12px;border-radius:10px;border:1px solid #ddd;background:#fff;font-size:14px;cursor:pointer;color:#555;}
+.modal-save{flex:2;padding:12px;border-radius:10px;border:none;background:#1A3A5C;color:#fff;font-size:14px;font-weight:700;cursor:pointer;}
+.empty{text-align:center;padding:40px 16px;color:#aaa;font-size:14px;}
+.key-hint{font-size:11px;color:#2E6B9E;padding:4px 16px 0;opacity:.8;}
 </style>
 </head>
 <body>
-
 <div class="header">
   <div class="header-sub">고대안암병원 전체</div>
   <div class="header-title">주간 방문 체크리스트</div>
   <div class="header-week" id="weekLabel"></div>
   <div class="progress-wrap">
-    <div class="progress-label">
-      <span>이번 주 방문</span>
-      <span id="progressText"></span>
-    </div>
+    <div class="progress-label"><span>이번 주 방문</span><span id="progressText"></span></div>
     <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
   </div>
 </div>
 
-<div class="filter-bar">
-  <button class="filter-btn active" onclick="setFilter('all')">전체</button>
-  <button class="filter-btn" onclick="setFilter('key')">⭐ 주력과</button>
-  <button class="filter-btn" onclick="setFilter('unchecked')">미방문</button>
-  <button class="filter-btn" onclick="setFilter('checked')">방문완료</button>
-  <button class="reset-btn" onclick="resetWeek()">🗑 초기화</button>
-</div>
-
-<div class="search-wrap">
-  <input class="search-input" type="search" placeholder="🔍 교수님 이름 검색..." oninput="onSearch(this.value)" />
-</div>
-
-<div class="legend">
-  <div class="legend-item"><div class="legend-dot" style="background:#4A90D9"></div>월</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#E67E22"></div>화</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#27AE60"></div>수</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#8E44AD"></div>목</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#E74C3C"></div>금</div>
-  <div style="margin-left:auto;font-size:11px;color:#888">⭐ = 주력과</div>
+<div class="sticky-bar">
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="setFilter('all',this)">전체</button>
+    <button class="filter-btn" onclick="setFilter('key',this)">⭐주력과</button>
+    <button class="filter-btn" onclick="setFilter('unchecked',this)">미방문</button>
+    <button class="filter-btn" onclick="setFilter('checked',this)">방문완료</button>
+    <button class="reset-btn" onclick="resetWeek()">🗑초기화</button>
+  </div>
+  <div class="search-wrap">
+    <input class="search-input" type="search" placeholder="🔍 교수님 이름 검색..." oninput="onSearch(this.value)">
+  </div>
+  <div class="day-tabs" id="dayTabs"></div>
+  <div class="key-hint">⭐ 별표를 눌러 주력과를 자유롭게 설정하세요</div>
 </div>
 
 <div class="list" id="list"></div>
@@ -113,198 +111,205 @@
   </div>
 </div>
 
-<div class="saving" id="saving">저장 중...</div>
-
 <script>
-const DEPARTMENTS = [
-  { code: "ENDO", name: "내분비내과", key: true, professors: ["김경진A","김경진B","김남훈","김영은","김정아","신수명","김희영"] },
-  { code: "GI", name: "소화기내과", key: true, professors: ["금보라","김은선","김태형","박세준","서연석","이보미","이재민","이호승","전한조","전훈재","진윤태","최혁순"] },
-  { code: "NR", name: "신경과", key: true, professors: ["김병조","김정빈","김하욤","노지훈","박건우","박영빈","박진우","백경원","유성욱","이선욱","이찬녕","정다다","조경희"] },
-  { code: "NS", name: "신경외과", key: true, professors: ["강신혁","김장훈","문은지","박경재","박동혁","박정율","안성재","오영규","이성우","이수범","허준석"] },
-  { code: "OS", name: "정형외과", key: true, professors: ["박종웅","박종훈","양재혁","이형래","장기모","장우영","최인철","정웅교","한승범","홍석하"] },
-  { code: "RH", name: "류마티스내과", key: true, professors: ["이영호","지종대"] },
-  { code: "NE", name: "신장내과", key: true, professors: ["김명규","김민형","오세원","유진영","이호진","조상경"] },
-  { code: "FM", name: "가정의학과", key: true, professors: ["김양현","윤지현","이규배","이종성","한병덕"] },
-  { code: "OG", name: "산부인과", key: true, professors: ["김성민","류기진","박현태","서현경","송재윤","안기훈","이상훈","이선미","정혜경"] },
-  { code: "OPH", name: "안과", key: true, professors: ["김동현","김승현","김영호","신정화","오재령","유정권","최유진"] },
-  { code: "BES", name: "유방내분비외과", key: true, professors: ["김성목","김훈엽","박다원","유지영","이영원","이은신","정승필"] },
-  { code: "ENT", name: "이비인후과", key: true, professors: ["김연수","김태훈","백승국","신재민","임기정","장지원","최수정"] },
-  { code: "ID", name: "감염내과", key: true, professors: ["김민자","김정연","손장욱","윤영경","정유승"] },
-  { code: "CV", name: "순환기내과", key: false, professors: ["김미나","김소리","김온유","김윤기","박성미","박영준","박재형","서창옥","신용훈","심재민","유철웅","유하영","임자영","정주희","조동혁","주형준","차정준","최종일","홍순준"] },
-  { code: "URO", name: "비뇨의학과", key: false, professors: ["강성구","강석호","노태일","박민구","심지성","진현중"] },
-  { code: "HEM", name: "혈액내과", key: false, professors: ["곽근예","김병수","김창곤","박용"] },
-  { code: "ONC", name: "종양내과", key: false, professors: ["김좌훈","김주원","박경화","이성곤","이수현","이지원","최윤지"] },
-  { code: "TVS", name: "심장혈관흉부외과", key: false, professors: ["김지언","김희중","손호성","이성호","이재홍","이준호","정영기","정재승","정재호"] },
-  { code: "PULMO", name: "호흡기알레르기내과", key: false, professors: ["김병근","양원진","이상엽","이은주","이영학","조성민","최수인"] },
-  { code: "RM", name: "재활의학과", key: false, professors: ["권유하","배초롱","서경천","이상헌","이세광"] },
-  { code: "PSY", name: "정신건강의학과", key: false, professors: ["김수진","박지훈","염지원","이헌정","정재권"] },
-  { code: "DERM", name: "피부과", key: false, professors: ["김대현","서수홍","안효현"] },
-  { code: "TXP", name: "이식혈관외과", key: false, professors: ["오영주","전흥만","정철웅"] },
-  { code: "HPS", name: "간담췌외과", key: false, professors: ["김동식","유세현","유영동","전수민","최유진"] },
-  { code: "CRS", name: "대장항문외과", key: false, professors: ["곽정면","김지선","김진","백세진","유효선","조은혜"] },
-  { code: "UGS", name: "위장관외과(상부)", key: false, professors: ["권영근","민재석","박성수","이인영"] },
-  { code: "PED", name: "소아청소년과", key: false, professors: ["강창민","박규현","박유진","박준은","박지원","변정혜","서민규"] },
-  { code: "AN", name: "마취통증의학과", key: false, professors: ["고재철","김선민"] },
-  { code: "RAD", name: "영상의학과", key: false, professors: ["곽정원"] },
-  { code: "RO", name: "방사선종양학과", key: false, professors: ["김동연","김철용","이남권"] },
-  { code: "TICU", name: "중환자외상외과", key: false, professors: ["김수정","이재명"] }
-];
+const DEPTS_RAW = [{"code":"ENDO","name":"내분비내과","professors":[{"name":"김경진A","slots":["월AM","월PM","화AM","수PM"]},{"name":"김경진B","slots":["화AM","화PM","목PM","금AM"]},{"name":"김남훈","slots":["수AM","수PM","목AM","목PM"]},{"name":"김영은","slots":["월AM","화PM","목AM","금PM"]},{"name":"김정아","slots":["월AM","수AM","목PM","금AM"]},{"name":"신수명","slots":["월PM","화PM","금AM","금PM"]},{"name":"김희영","slots":["월PM","화AM","수AM","수PM","목AM","금PM"]}]},{"code":"GI","name":"소화기내과","professors":[{"name":"금보라","slots":["월AM","수AM","수PM","목PM"]},{"name":"김은선","slots":["월PM","수AM","목AM","금PM"]},{"name":"김태형","slots":["월PM","화AM","화PM","수AM","금AM"]},{"name":"박세준","slots":["금PM"]},{"name":"서연석","slots":["월AM","월PM","화PM","수PM","목AM"]},{"name":"이보미","slots":["월PM","화AM","수PM"]},{"name":"이재민","slots":["월AM","수AM","수PM","목AM"]},{"name":"이호승","slots":["월PM","화AM","목PM"]},{"name":"전한조","slots":["월AM","월PM","화PM","금PM"]},{"name":"전훈재","slots":["화AM","목AM"]},{"name":"진윤태","slots":["월AM","수AM","수PM","금AM"]},{"name":"최혁순","slots":["화AM","화PM","수PM","목PM"]}]},{"code":"NR","name":"신경과","professors":[{"name":"김병조","slots":["월PM","수AM","목PM"]},{"name":"김정빈","slots":["화AM","화PM","수AM","수PM"]},{"name":"김하욤","slots":["월AM","월PM","금AM","금PM"]},{"name":"노지훈","slots":["목AM"]},{"name":"박건우","slots":["수AM","수PM","목AM"]},{"name":"박영빈","slots":["월PM","금AM"]},{"name":"박진우","slots":["화AM","화PM","수PM","목PM"]},{"name":"백경원","slots":["월AM","화PM","금AM","금PM"]},{"name":"유성욱","slots":["월PM","화AM","화PM","목AM"]},{"name":"이선욱","slots":["월PM","목AM","목PM","금AM"]},{"name":"이찬녕","slots":["화AM","수AM","목PM","금AM","금PM"]},{"name":"정다다","slots":["월AM","월PM","금AM"]},{"name":"조경희","slots":["월AM","수AM","수PM","목PM"]}]},{"code":"NS","name":"신경외과","professors":[{"name":"강신혁","slots":["월AM","목AM","목PM"]},{"name":"김장훈","slots":["화PM","목PM","금AM"]},{"name":"문은지","slots":["월AM","수PM","금PM"]},{"name":"박경재","slots":["화AM"]},{"name":"박동혁","slots":["월PM","화AM","수AM"]},{"name":"박정율","slots":["화AM","목AM","목PM"]},{"name":"안성재","slots":["월AM","월PM","금PM"]},{"name":"오영규","slots":["화AM","수AM","수PM","목PM"]},{"name":"이성우","slots":["화PM","목AM"]},{"name":"이수범","slots":["화AM","화PM","금AM"]},{"name":"허준석","slots":["목AM","목PM"]}]},{"code":"OS","name":"정형외과","professors":[{"name":"박종웅","slots":["월AM","수PM"]},{"name":"박종훈","slots":["월PM","수PM"]},{"name":"양재혁","slots":["월PM","수AM","수PM","금PM"]},{"name":"이형래","slots":["월AM","목AM","목PM"]},{"name":"장기모","slots":["월PM","화PM","수AM"]},{"name":"장우영","slots":["화AM","화PM","목AM"]},{"name":"최인철","slots":["화AM","목PM","금AM"]},{"name":"정웅교","slots":["화AM","화PM","목PM","금AM"]},{"name":"한승범","slots":["월AM","목AM"]},{"name":"홍석하","slots":["수AM","목AM","금AM"]}]},{"code":"RH","name":"류마티스내과","professors":[{"name":"이영호","slots":["월AM","화AM","화PM","수AM","목PM"]},{"name":"지종대","slots":["월PM","수PM","목AM","금AM","금PM"]}]},{"code":"NE","name":"신장내과","professors":[{"name":"김명규","slots":["월PM","수AM","수PM","목AM"]},{"name":"김민형","slots":["수AM","금PM"]},{"name":"오세원","slots":["화AM","화PM","수AM","금AM"]},{"name":"유진영","slots":["화PM","금AM"]},{"name":"이호진","slots":["수PM","목PM"]},{"name":"조상경","slots":["월AM","화AM","수PM","목AM"]}]},{"code":"FM","name":"가정의학과","professors":[{"name":"김양현","slots":["월AM","월PM","수AM"]},{"name":"윤지현","slots":["월AM","월PM","수PM","목PM","금AM"]},{"name":"이규배","slots":["화AM","화PM","수PM","목AM","금AM"]},{"name":"이종성","slots":["월AM","월PM","수PM","목AM","금PM"]},{"name":"한병덕","slots":["화AM","화PM","수AM","수PM","금AM"]}]},{"code":"OG","name":"산부인과","professors":[{"name":"김성민","slots":["월PM","목PM","금AM"]},{"name":"류기진","slots":["수AM","목PM"]},{"name":"박현태","slots":["화AM","수PM"]},{"name":"서현경","slots":["금PM"]},{"name":"송재윤","slots":["월AM","수PM"]},{"name":"안기훈","slots":["화PM","목AM"]},{"name":"이상훈","slots":["화PM","목AM","목PM"]},{"name":"이선미","slots":["목PM","금AM"]},{"name":"정혜경","slots":["월AM","금AM","금PM"]}]},{"code":"OPH","name":"안과","professors":[{"name":"김동현","slots":["월AM","월PM","수PM","금AM"]},{"name":"김승현","slots":["월PM","화PM","목PM"]},{"name":"김영호","slots":["월PM","수AM","금PM"]},{"name":"신정화","slots":["목AM","금AM"]},{"name":"오재령","slots":["월AM","수AM","목AM"]},{"name":"유정권","slots":["화AM","화PM","수PM","목AM"]},{"name":"최유진","slots":["화AM","수AM","목PM"]}]},{"code":"BES","name":"유방내분비외과","professors":[{"name":"김성목","slots":["월PM","금PM"]},{"name":"김훈엽","slots":["월AM","월PM","화PM","수AM","수PM","목AM","목PM"]},{"name":"박다원","slots":["화AM","금AM"]},{"name":"유지영","slots":["화AM","수AM","목PM"]},{"name":"이영원","slots":["화AM","수PM","금AM"]},{"name":"이은신","slots":["월PM","수PM","금AM"]},{"name":"정승필","slots":["월AM","화PM","목AM"]}]},{"code":"ENT","name":"이비인후과","professors":[{"name":"김연수","slots":["월AM","화AM","금AM"]},{"name":"김태훈","slots":["화PM","목AM"]},{"name":"백승국","slots":["월AM","월PM","수AM","수PM"]},{"name":"신재민","slots":["월AM","월PM","수PM"]},{"name":"장지원","slots":["월PM","목AM","목PM"]},{"name":"최수정","slots":["화AM","화PM","수AM","금AM"]}]},{"code":"ID","name":"감염내과","professors":[{"name":"김민자","slots":["월PM","수AM"]},{"name":"김정연","slots":["화AM","금PM"]},{"name":"손장욱","slots":["월AM","목PM"]},{"name":"윤영경","slots":["화PM","금AM"]},{"name":"정유승","slots":["목AM"]}]},{"code":"CV","name":"순환기내과","professors":[{"name":"김미나","slots":["월PM","화AM","수AM","수PM"]},{"name":"김소리","slots":["목PM","금AM"]},{"name":"김온유","slots":["금PM"]},{"name":"김윤기","slots":["화AM","화PM","금AM"]},{"name":"박성미","slots":["월AM","월PM","화PM","목AM"]},{"name":"박영준","slots":["월PM"]},{"name":"박재형","slots":["월AM","수AM","수PM","목PM"]},{"name":"서창옥","slots":["수PM"]},{"name":"신용훈","slots":["수PM","금AM"]},{"name":"심재민","slots":["화PM","목AM","목PM","금AM"]},{"name":"유철웅","slots":["월AM","수AM","수PM"]},{"name":"유하영","slots":["화PM"]},{"name":"임자영","slots":["화AM"]},{"name":"정주희","slots":["월AM","수AM","금PM"]},{"name":"조동혁","slots":["수PM","목AM","금PM"]},{"name":"주형준","slots":["월PM","화AM","화PM","수AM","목AM"]},{"name":"차정준","slots":["월AM","화PM","목PM"]},{"name":"최종일","slots":["월AM","월PM","수AM","수PM","목AM"]},{"name":"홍순준","slots":["월PM","화AM","목AM","목PM"]}]},{"code":"URO","name":"비뇨의학과","professors":[{"name":"강성구","slots":["월AM","수AM","수PM"]},{"name":"강석호","slots":["화AM","목AM","금AM"]},{"name":"노태일","slots":["화AM","화PM","목PM"]},{"name":"박민구","slots":["화PM","목AM","금AM"]},{"name":"심지성","slots":["월PM","수AM","수PM"]},{"name":"진현중","slots":["금PM"]}]},{"code":"HEM","name":"혈액내과","professors":[{"name":"곽근예","slots":["월PM","수AM","수PM"]},{"name":"김병수","slots":["월AM","월PM","화AM","수AM","수PM","금AM"]},{"name":"김창곤","slots":["화AM","화PM","금AM"]},{"name":"박용","slots":["월AM","월PM","목AM","목PM"]}]},{"code":"ONC","name":"종양내과","professors":[{"name":"김좌훈","slots":["월AM","수AM","수PM","목AM"]},{"name":"김주원","slots":["월PM","수AM","수PM","금AM"]},{"name":"박경화","slots":["월AM","화PM","목AM"]},{"name":"이성곤","slots":["화PM","목PM","금PM"]},{"name":"이수현","slots":["월AM","수PM","목AM","금AM"]},{"name":"이지원","slots":["월PM","화PM","수PM","금AM"]},{"name":"최윤지","slots":["월PM","화AM","목PM"]}]},{"code":"TVS","name":"심장혈관흉부외과","professors":[{"name":"김지언","slots":["금AM","금PM"]},{"name":"김희중","slots":["화PM","목AM"]},{"name":"손호성","slots":["목PM"]},{"name":"이성호","slots":["화PM","수AM"]},{"name":"이재홍","slots":["금PM"]},{"name":"이준호","slots":["월AM","월PM"]},{"name":"정영기","slots":["월PM","목PM"]},{"name":"정재승","slots":["월AM","수PM"]},{"name":"정재호","slots":["화AM","목AM"]}]},{"code":"PULMO","name":"호흡기알레르기내과","professors":[{"name":"김병근","slots":["화AM","화PM","목PM","금AM"]},{"name":"양원진","slots":["금PM"]},{"name":"이상엽","slots":["월AM","화PM","목AM"]},{"name":"이영학","slots":["수PM"]},{"name":"조성민","slots":["월PM","수AM","금PM"]},{"name":"최수인","slots":["화AM","수PM","목PM","금AM"]}]},{"code":"RM","name":"재활의학과","professors":[{"name":"권유하","slots":["월AM","월PM","화AM","금PM"]},{"name":"배초롱","slots":["월AM","화AM","수AM","수PM","목AM","목PM","금PM"]},{"name":"서경천","slots":["월PM","화AM","화PM","수AM","목PM","금AM","금PM"]},{"name":"이상헌","slots":["수AM","금AM"]},{"name":"이세광","slots":["월AM","월PM","화PM","수AM","목AM","목PM","금AM"]}]},{"code":"PSY","name":"정신건강의학과","professors":[{"name":"김수진","slots":["월AM","월PM","목PM","금AM"]},{"name":"박지훈","slots":["월AM","화PM","목AM","금PM"]},{"name":"염지원","slots":["월PM","화AM","수AM","목PM"]},{"name":"이헌정","slots":["화AM","수AM","목AM"]},{"name":"정재권","slots":["수PM","금AM"]}]},{"code":"DERM","name":"피부과","professors":[{"name":"김대현","slots":["월AM","수AM","목PM","금PM"]},{"name":"서수홍","slots":["월AM","월PM","화AM","목AM"]},{"name":"안효현","slots":["화PM","수PM","목AM","금AM"]}]},{"code":"TXP","name":"이식혈관외과","professors":[{"name":"오영주","slots":["월AM","화PM","목AM"]},{"name":"전흥만","slots":["월AM","월PM","목PM"]},{"name":"정철웅","slots":["화AM","화PM","금AM"]}]},{"code":"HPS","name":"간담췌외과","professors":[{"name":"김동식","slots":["화AM","목AM"]},{"name":"유세현","slots":["화PM","금AM"]},{"name":"유영동","slots":["월AM","목PM"]},{"name":"전수민","slots":["금PM"]},{"name":"최유진","slots":["월PM","수AM"]}]},{"code":"CRS","name":"대장항문외과","professors":[{"name":"곽정면","slots":["화AM","화PM","목PM"]},{"name":"김지선","slots":["월AM","수PM"]},{"name":"김진","slots":["월AM","수AM"]},{"name":"백세진","slots":["월PM","수AM","목AM"]},{"name":"유효선","slots":["화PM","금AM"]},{"name":"조은혜","slots":["화AM","금PM"]}]},{"code":"UGS","name":"위장관외과(상부)","professors":[{"name":"권영근","slots":["월AM","화AM","화PM","목AM","금AM"]},{"name":"민재석","slots":["월PM","수AM","수PM"]},{"name":"박성수","slots":["화AM","화PM","금AM"]},{"name":"이인영","slots":["수PM","목PM","금AM"]}]},{"code":"PED","name":"소아청소년과","professors":[{"name":"강창민","slots":["화AM","수PM","금PM"]},{"name":"박규현","slots":["월PM","수AM"]},{"name":"박유진","slots":["목PM"]},{"name":"박준은","slots":["화AM","화PM","목AM"]},{"name":"박지원","slots":["목PM","금AM"]},{"name":"변정혜","slots":["월AM","화PM","목PM"]},{"name":"서민규","slots":["수AM","금PM"]}]},{"code":"AN","name":"마취통증의학과","professors":[{"name":"고재철","slots":["화AM","화PM","수AM","금AM","금PM"]},{"name":"김선민","slots":["수AM","목AM","목PM","금PM"]}]},{"code":"RO","name":"방사선종양학과","professors":[{"name":"김동연","slots":["화AM","화PM","수AM","수PM","목PM","금AM"]},{"name":"김철용","slots":["월PM","화AM","목AM","목PM"]},{"name":"이남권","slots":["월AM","화AM","수AM","수PM","금AM"]}]},{"code":"TICU","name":"중환자외상외과","professors":[{"name":"김수정","slots":["수PM"]},{"name":"이재명","slots":["월PM"]}]}];
 
-const DAYS = ["월","화","수","목","금"];
-const DAY_COLORS = { 월:"#4A90D9", 화:"#E67E22", 수:"#27AE60", 목:"#8E44AD", 금:"#E74C3C" };
+const DEFAULT_KEYS = new Set(['ENDO','GI','NR','NS','OS','RH','NE','FM','OG','OPH','BES','ENT','ID']);
+const DAYS=['월','화','수','목','금'];
+const DAY_COLORS={월:'#4A90D9',화:'#E67E22',수:'#27AE60',목:'#8E44AD',금:'#E74C3C'};
 
-let checks = {}, notes = {}, openDepts = {}, currentFilter = 'all', searchQuery = '';
-let editingNoteKey = null;
+let checks={}, notes={}, openDepts={}, keyDepts=new Set(), filter='all', searchQ='', selectedDay='전체', editingKey=null;
 
-function getWeekKey() {
-  const now = new Date(), day = now.getDay();
-  const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-  const mon = new Date(new Date().setDate(diff));
-  return `checklist_v2_${mon.getFullYear()}_${mon.getMonth()+1}_${mon.getDate()}`;
+function getWeekKey(){
+  const now=new Date(),d=now.getDay();
+  const diff=now.getDate()-d+(d===0?-6:1);
+  const mon=new Date(new Date().setDate(diff));
+  return `cl_v4_${mon.getFullYear()}_${mon.getMonth()+1}_${mon.getDate()}`;
 }
-
-function getWeekLabel() {
-  const now = new Date(), day = now.getDay();
-  const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-  const mon = new Date(new Date().setDate(diff));
-  const fri = new Date(mon); fri.setDate(mon.getDate()+4);
+function getWeekLabel(){
+  const now=new Date(),d=now.getDay();
+  const diff=now.getDate()-d+(d===0?-6:1);
+  const mon=new Date(new Date().setDate(diff));
+  const fri=new Date(mon); fri.setDate(mon.getDate()+4);
   return `📅 ${mon.getMonth()+1}/${mon.getDate()} ~ ${fri.getMonth()+1}/${fri.getDate()}`;
 }
+const WK=getWeekKey();
 
-const WEEK_KEY = getWeekKey();
-
-function load() {
-  try {
-    const raw = localStorage.getItem(WEEK_KEY);
-    if (raw) { const d = JSON.parse(raw); checks = d.checks||{}; notes = d.notes||{}; }
-  } catch(e) {}
-  DEPARTMENTS.forEach(d => openDepts[d.code] = d.key);
-  document.getElementById('weekLabel').textContent = getWeekLabel();
+function load(){
+  try{
+    const r=localStorage.getItem(WK);
+    if(r){const d=JSON.parse(r); checks=d.checks||{}; notes=d.notes||{};}
+    const ks=localStorage.getItem('keyDepts_v4');
+    keyDepts=ks?new Set(JSON.parse(ks)):new Set(DEFAULT_KEYS);
+  }catch(e){keyDepts=new Set(DEFAULT_KEYS);}
+  DEPTS_RAW.forEach(d=>openDepts[d.code]=keyDepts.has(d.code));
+  document.getElementById('weekLabel').textContent=getWeekLabel();
+  renderDayTabs();
   render();
 }
 
-function save() {
-  try { localStorage.setItem(WEEK_KEY, JSON.stringify({checks, notes})); } catch(e) {}
-  const el = document.getElementById('saving');
-  el.style.display = 'block';
-  setTimeout(() => el.style.display = 'none', 800);
+function save(){
+  try{localStorage.setItem(WK,JSON.stringify({checks,notes}));}catch(e){}
+}
+function saveKeys(){
+  try{localStorage.setItem('keyDepts_v4',JSON.stringify([...keyDepts]));}catch(e){}
 }
 
-function isChecked(dept, prof, day) { return !!checks[`${dept}_${prof}_${day}`]; }
-function visitCount(dept, prof) { return DAYS.filter(d => isChecked(dept, prof, d)).length; }
+function toggleKey(code, e){
+  e.stopPropagation();
+  if(keyDepts.has(code)) keyDepts.delete(code);
+  else keyDepts.add(code);
+  saveKeys();
+  render();
+}
 
-function toggleCheck(dept, prof, day) {
-  const k = `${dept}_${prof}_${day}`;
-  checks[k] = !checks[k];
+function isChecked(dept,prof,slot){return !!checks[`${dept}_${prof}_${slot}`];}
+function visitCount(dept,prof){
+  const p=DEPTS_RAW.find(d=>d.code===dept)?.professors.find(p=>p.name===prof);
+  return p?p.slots.filter(s=>isChecked(dept,prof,s)).length:0;
+}
+
+function toggleCheck(dept,prof,slot){
+  const k=`${dept}_${prof}_${slot}`;
+  checks[k]=!checks[k];
   save(); render();
 }
-
-function setFilter(f) {
-  currentFilter = f;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
+function setFilter(f,btn){
+  filter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
   render();
 }
-
-function onSearch(q) { searchQuery = q.trim(); render(); }
-
-function toggleDept(code) { openDepts[code] = !openDepts[code]; render(); }
-
-function openNote(key) {
-  editingNoteKey = key;
-  document.getElementById('noteInput').value = notes[key] || '';
+function setDay(day){selectedDay=day; renderDayTabs(); render();}
+function onSearch(q){searchQ=q.trim(); render();}
+function toggleDept(code){openDepts[code]=!openDepts[code]; render();}
+function openNote(key){
+  editingKey=key;
+  document.getElementById('noteInput').value=notes[key]||'';
   document.getElementById('modalBg').classList.add('open');
-  setTimeout(() => document.getElementById('noteInput').focus(), 100);
+  setTimeout(()=>document.getElementById('noteInput').focus(),100);
 }
-
-function closeModal() { document.getElementById('modalBg').classList.remove('open'); editingNoteKey = null; }
-
-function saveNote() {
-  if (!editingNoteKey) return;
-  const val = document.getElementById('noteInput').value.trim();
-  if (val) notes[editingNoteKey] = val;
-  else delete notes[editingNoteKey];
+function closeModal(){document.getElementById('modalBg').classList.remove('open'); editingKey=null;}
+function saveNote(){
+  if(!editingKey)return;
+  const v=document.getElementById('noteInput').value.trim();
+  if(v)notes[editingKey]=v; else delete notes[editingKey];
   save(); render(); closeModal();
 }
-
-function resetWeek() {
-  if (confirm('이번 주 체크를 전부 초기화할까요?')) { checks = {}; notes = {}; save(); render(); }
+function resetWeek(){
+  if(confirm('이번 주 체크를 전부 초기화할까요?')){checks={}; notes={}; save(); render();}
 }
 
-function updateProgress() {
-  const total = DEPARTMENTS.reduce((s,d) => s+d.professors.length, 0);
-  const visited = DEPARTMENTS.reduce((s,d) => s+d.professors.filter(p => visitCount(d.code,p)>0).length, 0);
-  const pct = Math.round(visited/total*100);
-  document.getElementById('progressText').textContent = `${visited} / ${total}명 (${pct}%)`;
-  document.getElementById('progressFill').style.width = pct+'%';
+function renderDayTabs(){
+  const all=['전체',...DAYS];
+  document.getElementById('dayTabs').innerHTML=all.map(d=>{
+    const color=d==='전체'?'#1A3A5C':DAY_COLORS[d];
+    const active=selectedDay===d;
+    return `<div class="day-tab${active?' active':''}" style="${active?`background:${color};color:#fff`:''}" onclick="setDay('${d}')">${d==='전체'?'전체':d+'요일'}</div>`;
+  }).join('');
 }
 
-function render() {
-  updateProgress();
-  const list = document.getElementById('list');
-  let html = '';
+function updateProgress(){
+  const total=DEPTS_RAW.reduce((s,d)=>s+d.professors.length,0);
+  const visited=DEPTS_RAW.reduce((s,d)=>s+d.professors.filter(p=>visitCount(d.code,p.name)>0).length,0);
+  const pct=Math.round(visited/total*100);
+  document.getElementById('progressText').textContent=`${visited}/${total}명 (${pct}%)`;
+  document.getElementById('progressFill').style.width=pct+'%';
+}
 
-  for (const dept of DEPARTMENTS) {
-    if (currentFilter === 'key' && !dept.key) continue;
+function getVisibleSlots(slots){
+  if(selectedDay==='전체') return slots;
+  return slots.filter(s=>s.startsWith(selectedDay));
+}
 
-    let profs = dept.professors;
-    if (searchQuery) profs = profs.filter(p => p.includes(searchQuery));
-    if (currentFilter === 'checked') profs = profs.filter(p => visitCount(dept.code,p)>0);
-    if (currentFilter === 'unchecked') profs = profs.filter(p => visitCount(dept.code,p)===0);
-    if (profs.length === 0) continue;
+function renderDeptCard(dept){
+  const isKey=keyDepts.has(dept.code);
+  let profs=dept.professors.filter(p=>{
+    if(searchQ&&!p.name.includes(searchQ)) return false;
+    const vis=getVisibleSlots(p.slots);
+    if(vis.length===0) return false;
+    const cnt=visitCount(dept.code,p.name);
+    if(filter==='checked'&&cnt===0) return false;
+    if(filter==='unchecked'&&cnt>0) return false;
+    return true;
+  });
+  if(filter==='key'&&!isKey) return '';
+  if(profs.length===0) return '';
 
-    const deptVisited = dept.professors.filter(p => visitCount(dept.code,p)>0).length;
-    const allDone = deptVisited === dept.professors.length;
-    const isOpen = openDepts[dept.code];
-    const bgColor = allDone ? '#27AE60' : (dept.key ? '#1A3A5C' : '#5D6D7E');
+  const deptVisited=dept.professors.filter(p=>visitCount(dept.code,p.name)>0).length;
+  const allDone=deptVisited===dept.professors.length;
+  const isOpen=openDepts[dept.code];
+  const bgColor=allDone?'#27AE60':isKey?'#1A3A5C':'#8899AA';
 
-    html += `<div class="dept-card">
-      <div class="dept-header ${allDone?'done':''}" onclick="toggleDept('${dept.code}')">
-        <div class="dept-left">
-          <span class="dept-badge" style="background:${bgColor}">${dept.code}</span>
-          <span class="dept-name">${dept.name}</span>
-          ${dept.key ? '<span class="key-star">⭐</span>' : ''}
-          ${allDone ? '<span style="font-size:12px">✅</span>' : ''}
-        </div>
-        <div class="dept-right">
-          <span class="dept-count ${allDone?'done':''}">${deptVisited}/${dept.professors.length}</span>
-          <span class="dept-arrow">${isOpen?'▲':'▼'}</span>
-        </div>
-      </div>`;
+  let html=`<div class="dept-card${isKey?' is-key':''}">
+    <div class="dept-header${allDone?' done':''}${isKey?' is-key':''}" onclick="toggleDept('${dept.code}')">
+      <div class="dept-left">
+        <span class="dept-badge" style="background:${bgColor}">${dept.code}</span>
+        <span class="dept-name">${dept.name}</span>
+        ${allDone?'<span style="font-size:11px">✅</span>':''}
+      </div>
+      <div class="dept-right">
+        <span class="dept-count${allDone?' done':''}">${deptVisited}/${dept.professors.length}</span>
+        <button class="star-btn" onclick="toggleKey('${dept.code}',event)" title="주력과 설정">${isKey?'⭐':'☆'}</button>
+        <span style="color:#aaa;font-size:12px">${isOpen?'▲':'▼'}</span>
+      </div>
+    </div>`;
 
-    if (isOpen) {
-      html += `<div class="prof-list">`;
-      for (const prof of profs) {
-        const cnt = visitCount(dept.code, prof);
-        const noteKey = `${dept.code}_${prof}`;
-        const hasNote = !!notes[noteKey];
-        html += `<div class="prof-item ${cnt>0?'visited':''}">
-          <div class="prof-top">
-            <div>
-              <span class="prof-name ${cnt>0?'visited':''}">${prof} 교수님</span>
-              ${cnt>0 ? `<span class="visit-badge">✓ ${cnt}회</span>` : ''}
-            </div>
-            <button class="note-btn ${hasNote?'has-note':''}" onclick="openNote('${noteKey}')">${hasNote?'📝 메모':'+ 메모'}</button>
+  if(isOpen){
+    html+=`<div class="prof-list">`;
+    for(const prof of profs){
+      const cnt=visitCount(dept.code,prof.name);
+      const nk=`${dept.code}_${prof.name}`;
+      const hasNote=!!notes[nk];
+      const vis=getVisibleSlots(prof.slots);
+      html+=`<div class="prof-item${cnt>0?' visited':''}">
+        <div class="prof-top">
+          <div>
+            <span class="prof-name${cnt>0?' visited':''}">${prof.name} 교수님</span>
+            ${cnt>0?`<span class="visit-badge">✓${cnt}</span>`:''}
           </div>
-          ${hasNote ? `<div class="note-display">${notes[noteKey]}</div>` : ''}
-          <div class="day-btns">`;
-        for (const day of DAYS) {
-          const checked = isChecked(dept.code, prof, day);
-          const color = DAY_COLORS[day];
-          const bg = checked ? color : '#F8FAFC';
-          const txtColor = checked ? '#fff' : color;
-          const border = checked ? 'none' : `1.5px solid ${color}44`;
-          html += `<button class="day-btn" style="background:${bg};color:${txtColor};border:${border}" onclick="toggleCheck('${dept.code}','${prof}','${day}')">
-            <span>${day}</span>${checked?'<span class="day-check">✓</span>':''}
-          </button>`;
-        }
-        html += `</div></div>`;
+          <button class="note-btn${hasNote?' has-note':''}" onclick="openNote('${nk}')">${hasNote?'📝':'+ 메모'}</button>
+        </div>
+        ${hasNote?`<div class="note-display">${notes[nk]}</div>`:''}
+        <div class="slot-btns">`;
+      for(const slot of vis){
+        const day=slot[0];
+        const isAM=slot.endsWith('AM');
+        const color=DAY_COLORS[day];
+        const checked=isChecked(dept.code,prof.name,slot);
+        html+=`<button class="slot-btn ${checked?'checked':'unchecked'}"
+          style="${checked?`background:${color}`:`color:${color};border:1.5px solid ${color}44`}"
+          onclick="toggleCheck('${dept.code}','${prof.name}','${slot}')">
+          ${day}${isAM?'오전':'오후'}${checked?' ✓':''}
+        </button>`;
       }
-      html += `</div>`;
+      html+=`</div></div>`;
     }
-    html += `</div>`;
+    html+=`</div>`;
   }
-  list.innerHTML = html;
+  html+=`</div>`;
+  return html;
+}
+
+function render(){
+  updateProgress();
+  const keyDepts_arr=DEPTS_RAW.filter(d=>keyDepts.has(d.code));
+  const otherDepts=DEPTS_RAW.filter(d=>!keyDepts.has(d.code));
+
+  let html='';
+  const keyCards=keyDepts_arr.map(renderDeptCard).filter(Boolean);
+  const otherCards=otherDepts.map(renderDeptCard).filter(Boolean);
+
+  if(keyCards.length>0){
+    if(filter!=='key') html+=`<div class="key-divider"><div class="key-divider-line"></div><div class="key-divider-text">⭐ 주력과</div><div class="key-divider-line"></div></div>`;
+    html+=keyCards.join('');
+  }
+  if(otherCards.length>0&&filter!=='key'){
+    if(keyCards.length>0) html+=`<div class="key-divider" style="margin-top:4px"><div class="key-divider-line"></div><div class="key-divider-text">전체 진료과</div><div class="key-divider-line"></div></div>`;
+    html+=otherCards.join('');
+  }
+  if(!html) html=`<div class="empty">해당하는 교수님이 없어요 🙅</div>`;
+  document.getElementById('list').innerHTML=html;
 }
 
 load();
